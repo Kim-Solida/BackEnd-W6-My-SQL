@@ -5,5 +5,4 @@ const categoryRouter = Router();
 categoryRouter.get("/", getCategories);
 categoryRouter.get("/:id/articles", getArticlesByCategory);
 
-
 export default categoryRouter;
