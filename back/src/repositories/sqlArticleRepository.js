@@ -5,8 +5,10 @@ export async function getArticles() {
     // TODO
     // from exercise 02
     // const [rows] = await pool.query("SELECT * FROM articles");
+    
     // exercise 03 : display each article information and the journalist name, so we need to used join
     // const [rows] = await pool.query("SELECT a.*, j.name as journalist FROM articles a JOIN journalists j ON j.id = a.journalist_id");
+    
     const [rows] = await pool.query(`
         SELECT a.*, j.name AS journalist,
             GROUP_CONCAT(c.name) AS categories
@@ -46,13 +48,6 @@ export async function getArticleById(id) {
 // Create a new article
 export async function createArticle(article) {
     // TODO
-    // const { title, content, journalist, category} = article;
-    
-    // const [result] = await pool.query(
-    //     "INSERT INTO articles (title, content, journalist_id) VALUES (?, ?, ?)", 
-    //     [title, content, journalist, category]
-    // );
-    // return { id: result.insertId, ...article };
     const { title, content, journalist, category } = article; // categories is expected to be an array
 
     // Insert the article
@@ -62,16 +57,6 @@ export async function createArticle(article) {
     );
 
     const articleId = result.insertId;
-
-    // Insert into articles_categories (many-to-many relationship)
-    // if (Array.isArray(categories) && categories.length > 0) {
-    //     const values = categories.map((categoryId) => [articleId, categoryId]);
-
-    //     await pool.query(
-    //         "INSERT INTO articles_categories (article_id, category_id) VALUES ?",
-    //         [values]
-    //     );
-    // }
     await pool.query(
         "INSERT INTO articles_categories (article_id, category_id) VALUES (?, ?)",
         [articleId, category]
@@ -97,7 +82,6 @@ export async function updateArticle(id, updatedData) {
 // Delete an article by ID
 export async function deleteArticle(id) {
     // TODO
-    // const [result] = await pool.query("DELETE FROM articles WHERE id = ?", [id]);
   // First, delete from the join table
   await pool.query("DELETE FROM articles_categories WHERE article_id = ?", [id]);
 
